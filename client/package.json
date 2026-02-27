@@ -1,13 +1,13 @@
 {
-    "name": "harbour",
+    "name": "harbour-full",
     "displayName": "Harbour and xHarbour",
     "description": "Harbour and xHarbour languages support for visual studio code",
     "version": "1.0.7",
-    "publisher": "aperricone",
+    "publisher": "ekon",
     "icon": "harbourIcon.png",
     "main": "./dist/extension",
     "repository": {
-        "url": "https://github.com/APerricone/harbourCodeExtension"
+        "url": "https://github.com/ekonbenefits/harbourCodeExtension"
     },
     "activationEvents": [
         "onLanguage:harbour",
@@ -36,7 +36,8 @@
     "scripts": {
         "vscode:prepublish": "node copy.js",
         "prelanch": "webpack --mode development",
-        "webpack2": "webpack --mode production"
+        "webpack2": "webpack --mode production",
+        "deploy": "vsce publish"
     },
     "contributes": {
         "problemMatchers": [
@@ -555,6 +556,7 @@
         ]
     },
     "devDependencies": {
+        "@vscode/vsce": "^3.7.1",
         "node-loader": "^2.1.0",
         "webpack": "^5.105.3",
         "webpack-cli": "^6.0.1"

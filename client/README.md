@@ -1,22 +1,18 @@
-# Antonino Perricone's extension for visual studio code about Harbour and xHarbour programming languages
+# Fork of Antonino Perricone's extension for visual studio code for Harbour and xHarbour programming languages
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LHCBE7ERSSVDJ&source=url)
-[![Version](https://vsmarketplacebadges.dev/version-short/aperricone.harbour.svg)](https://marketplace.visualstudio.com/items?itemName=aperricone.harbour)
-[![Installs](https://vsmarketplacebadges.dev/installs-short/aperricone.harbour.svg)](https://marketplace.visualstudio.com/items?itemName=aperricone.harbour)
-[![Ratings](https://vsmarketplacebadges.dev/rating-short/aperricone.harbour.svg)](https://marketplace.visualstudio.com/items?itemName=aperricone.harbour)
-
-do you like this extension? Help me to make it better with a donation, click the first button.
+[![Version](https://vsmarketplacebadges.dev/version-short/ekon.harbour-full.svg)](https://marketplace.visualstudio.com/items?itemName=ekon.harbour-full)
+[![Installs](https://vsmarketplacebadges.dev/installs-short/ekon.harbour-full.svg)](https://marketplace.visualstudio.com/items?itemName=ekon.harbour-full)
+[![Ratings](https://vsmarketplacebadges.dev/rating-short/ekon.harbour-full.svg)](https://marketplace.visualstudio.com/items?itemName=ekon.harbour-full)
 
 ## Features
-
-- [syntax hightlight](https://github.com/APerricone/harbourCodeExtension/wiki/Syntax-hightlight), with [Edgard Lorraine Messias](https://github.com/edgardmessias)
-- [Debug support](https://github.com/APerricone/harbourCodeExtension/wiki/Debugger)
-- [Diagnostic infos](https://github.com/APerricone/harbourCodeExtension/wiki/Diagnostics-Lint)
+- [syntax hightlight](https://github.com/ekonbenefits/harbourCodeExtension/wiki/Syntax-hightlight), with [Edgard Lorraine Messias](https://github.com/edgardmessias)
+- [Debug support](https://github.com/ekonbenefits/harbourCodeExtension/wiki/Debugger)
+- [Diagnostic infos](https://github.com/ekonbenefits/harbourCodeExtension/wiki/Diagnostics-Lint)
 - Symbol Definitions Within a Document provider (access it by pressing <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+<kbd>O</kbd> or <kbd>CTRL</kbd>+<kbd>P</kbd> then <kbd>@</kbd>)
 - Symbol Definitions in workspace provider (access it by pressing <kbd>CTRL</kbd>+<kbd>T</kbd> or <kbd>CTRL</kbd>+<kbd>P</kbd> then <kbd>#</kbd>)
 
 ## Documentation links
-See the [wiki](https://github.com/APerricone/harbourCodeExtension/wiki) for more information.
+See the [wiki](https://github.com/ekonbenefits/harbourCodeExtension/wiki) for more information.
 An introdution for harbour developers can be found in these articles:
 - [Harbour Wiki - Developing and Debugging Harbour Programs with VSCODE](https://harbour.wiki/index.asp?page=PublicArticles&mode=show&id=190401174818&sig=6893630672) by Eric Lendvai
 - [Harbour magazine - Visual Studio Code for Harbour](https://medium.com/harbour-magazine/visual-studio-code-for-harbour-e148f9c1861a) by José Luis Sánchez ([available in spanish too](https://medium.com/harbour-magazine/visual-studio-code-para-harbour-85b0646ff312))
