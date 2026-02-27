@@ -5,7 +5,7 @@
 [![Ratings](https://vsmarketplacebadges.dev/rating-short/ekon.harbour-full.svg)](https://marketplace.visualstudio.com/items?itemName=ekon.harbour-full)
 
 ## Features
-- [syntax hightlight](https://github.com/ekonbenefits/harbourCodeExtension/wiki/Syntax-hightlight), with [Edgard Lorraine Messias](https://github.com/edgardmessias)
+- [syntax highlight](https://github.com/ekonbenefits/harbourCodeExtension/wiki/Syntax-highlight), with [Edgard Lorraine Messias](https://github.com/edgardmessias)
 - [Debug support](https://github.com/ekonbenefits/harbourCodeExtension/wiki/Debugger)
 - [Diagnostic infos](https://github.com/ekonbenefits/harbourCodeExtension/wiki/Diagnostics-Lint)
 - Symbol Definitions Within a Document provider (access it by pressing <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+<kbd>O</kbd> or <kbd>CTRL</kbd>+<kbd>P</kbd> then <kbd>@</kbd>)
