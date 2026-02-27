@@ -1,4 +1,4 @@
-# Fork of Antonino Perricone's extension for visual studio code for Harbour and xHarbour programming languages
+# Ekon Benefits' fork of Antonino Perricone's extension for visual studio code for Harbour and xHarbour programming languages
 
 [![Version](https://vsmarketplacebadges.dev/version-short/ekon.harbour-full.svg)](https://marketplace.visualstudio.com/items?itemName=ekon.harbour-full)
 [![Installs](https://vsmarketplacebadges.dev/installs-short/ekon.harbour-full.svg)](https://marketplace.visualstudio.com/items?itemName=ekon.harbour-full)
