@@ -9,7 +9,8 @@ const taskProvider = require('./taskProvider.js');
 const net = require("net");
 const formatEditor = require("./formatEditor.js");
 
-const SETTINGS_MIGRATION_KEY = "ekonHarbour.settingsMigration.v2";
+const SETTINGS_MIGRATION_GLOBAL_KEY = "ekonHarbour.settingsMigration.global.v1";
+const SETTINGS_MIGRATION_WORKSPACE_KEY = "ekonHarbour.settingsMigration.workspace.v1";
 const LEGACY_CONFIG_PROMPT_KEY = "ekonHarbour.legacyConfigPrompt.v1";
 const SETTINGS_TO_MIGRATE = [
 	"validating",
@@ -184,17 +185,17 @@ function migrateLegacyConfigFilesInWorkspace() {
 }
 
 async function offerLegacyConfigMigration(context) {
-	if (context.globalState.get(LEGACY_CONFIG_PROMPT_KEY) || !vscode.workspace.workspaceFolders) {
+	if (context.workspaceState.get(LEGACY_CONFIG_PROMPT_KEY) || !vscode.workspace.workspaceFolders) {
 		return;
 	}
 	const status = migrateLegacyConfigFilesInWorkspace();
 	const foundLegacy = status.foundLegacy || status.migratedCount > 0;
 	if (!foundLegacy) {
-		await context.globalState.update(LEGACY_CONFIG_PROMPT_KEY, true);
+		await context.workspaceState.update(LEGACY_CONFIG_PROMPT_KEY, true);
 		return;
 	}
 	if (status.migratedCount > 0) {
-		await context.globalState.update(LEGACY_CONFIG_PROMPT_KEY, true);
+		await context.workspaceState.update(LEGACY_CONFIG_PROMPT_KEY, true);
 		vscode.window.showInformationMessage(`Ekon Harbour migration complete. Updated ${status.migratedCount} file(s).`);
 		return;
 	}
@@ -205,14 +206,14 @@ async function offerLegacyConfigMigration(context) {
 		"Don't ask again"
 	);
 	if (choice === "Don't ask again") {
-		await context.globalState.update(LEGACY_CONFIG_PROMPT_KEY, true);
+		await context.workspaceState.update(LEGACY_CONFIG_PROMPT_KEY, true);
 		return;
 	}
 	if (choice !== "Update now") {
 		return;
 	}
 	const result = migrateLegacyConfigFilesInWorkspace();
-	await context.globalState.update(LEGACY_CONFIG_PROMPT_KEY, true);
+	await context.workspaceState.update(LEGACY_CONFIG_PROMPT_KEY, true);
 	vscode.window.showInformationMessage(`Ekon Harbour migration complete. Updated ${result.migratedCount} file(s).`);
 }
 
@@ -225,38 +226,45 @@ async function runLegacyConfigMigrationCommand() {
 	vscode.window.showInformationMessage(`Ekon Harbour migration complete. Updated ${result.migratedCount} file(s).`);
 }
 
-async function migrateLegacySettings(context) {
-	if (context.globalState.get(SETTINGS_MIGRATION_KEY)) {
-		return 0;
-	}
+async function migrateLegacySettings(context, forceGlobal, forceWorkspace) {
+	if (forceGlobal === undefined) forceGlobal = false;
+	if (forceWorkspace === undefined) forceWorkspace = false;
 	let migratedCount = 0;
 	const oldConfig = vscode.workspace.getConfiguration("harbour");
 	const newConfig = vscode.workspace.getConfiguration("ekonHarbour");
-	for (const setting of SETTINGS_TO_MIGRATE) {
-		const oldValue = oldConfig.inspect(setting);
-		const newValue = newConfig.inspect(setting);
-		if (oldValue && newValue) {
-			if (newValue.globalValue === undefined && oldValue.globalValue !== undefined) {
+
+	if (forceGlobal || !context.globalState.get(SETTINGS_MIGRATION_GLOBAL_KEY)) {
+		for (const setting of SETTINGS_TO_MIGRATE) {
+			const oldValue = oldConfig.inspect(setting);
+			const newValue = newConfig.inspect(setting);
+			if (oldValue && newValue && newValue.globalValue === undefined && oldValue.globalValue !== undefined) {
 				try {
 					await newConfig.update(setting, oldValue.globalValue, vscode.ConfigurationTarget.Global);
 					migratedCount++;
 				} catch (_err) {}
 			}
-			if (newValue.workspaceValue === undefined && oldValue.workspaceValue !== undefined) {
+		}
+		await context.globalState.update(SETTINGS_MIGRATION_GLOBAL_KEY, true);
+	}
+
+	if (forceWorkspace || !context.workspaceState.get(SETTINGS_MIGRATION_WORKSPACE_KEY)) {
+		for (const setting of SETTINGS_TO_MIGRATE) {
+			const oldValue = oldConfig.inspect(setting);
+			const newValue = newConfig.inspect(setting);
+			if (oldValue && newValue && newValue.workspaceValue === undefined && oldValue.workspaceValue !== undefined) {
 				try {
 					await newConfig.update(setting, oldValue.workspaceValue, vscode.ConfigurationTarget.Workspace);
 					migratedCount++;
 				} catch (_err) {}
 			}
 		}
-	}
 
-	// Folder-scoped values (for example include paths in .vscode/settings.json)
-	// must be migrated using folder-scoped configuration objects.
-	if (vscode.workspace.workspaceFolders) {
-		for (const folder of vscode.workspace.workspaceFolders) {
-			const oldFolderConfig = vscode.workspace.getConfiguration("harbour", folder.uri);
-			const newFolderConfig = vscode.workspace.getConfiguration("ekonHarbour", folder.uri);
+		// Folder-scoped values (for example include paths in .vscode/settings.json)
+		// must be migrated using folder-scoped configuration objects.
+		if (vscode.workspace.workspaceFolders) {
+			for (const folder of vscode.workspace.workspaceFolders) {
+				const oldFolderConfig = vscode.workspace.getConfiguration("harbour", folder.uri);
+				const newFolderConfig = vscode.workspace.getConfiguration("ekonHarbour", folder.uri);
 			for (const setting of SETTINGS_TO_MIGRATE) {
 				const oldFolderValue = oldFolderConfig.inspect(setting);
 				const newFolderValue = newFolderConfig.inspect(setting);
@@ -270,18 +278,15 @@ async function migrateLegacySettings(context) {
 					} catch (_err) {}
 				}
 			}
+			}
 		}
+		await context.workspaceState.update(SETTINGS_MIGRATION_WORKSPACE_KEY, true);
 	}
-	await context.globalState.update(SETTINGS_MIGRATION_KEY, true);
 	return migratedCount;
 }
 
 async function runLegacySettingsMigrationCommand(context) {
-	const previousState = context.globalState.get(SETTINGS_MIGRATION_KEY);
-	if (previousState) {
-		await context.globalState.update(SETTINGS_MIGRATION_KEY, false);
-	}
-	const migratedCount = await migrateLegacySettings(context);
+	const migratedCount = await migrateLegacySettings(context, true, true);
 	vscode.window.showInformationMessage(`Ekon Harbour settings migration complete. Updated ${migratedCount} value(s).`);
 }
 
