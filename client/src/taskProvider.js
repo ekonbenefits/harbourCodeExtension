@@ -422,8 +422,13 @@ class HBMK2Task {
 }
 
 function activate() {
-    vscode.tasks.registerTaskProvider("EkonHarbour", new HRBTask());
-    vscode.tasks.registerTaskProvider("EkonHBMK2", new HBMK2Task());
+    const hrbProvider = new HRBTask();
+    const hbmk2Provider = new HBMK2Task();
+    vscode.tasks.registerTaskProvider("EkonHarbour", hrbProvider);
+    vscode.tasks.registerTaskProvider("EkonHBMK2", hbmk2Provider);
+    // Legacy aliases keep old tasks.json working while users migrate.
+    vscode.tasks.registerTaskProvider("Harbour", hrbProvider);
+    vscode.tasks.registerTaskProvider("HBMK2", hbmk2Provider);
 }
 
 exports.activate = activate;
