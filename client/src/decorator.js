@@ -19,7 +19,7 @@ function activate(context,_client)
 
 function showGroups(evt)
 {
-	var section = vscode.workspace.getConfiguration('harbour');
+	var section = vscode.workspace.getConfiguration('ekonHarbour');
 	if(!section.decorator) return;
 
 	var editor = evt.textEditor

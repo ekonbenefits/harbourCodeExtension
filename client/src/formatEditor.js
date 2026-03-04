@@ -21,7 +21,7 @@ function showEditor(context) {
     );
     var package = JSON.parse(fs.readFileSync(path.join(context.extensionPath,"package.json"), 'utf8'))
     package = package.contributes.configuration.properties;
-    var section = vscode.workspace.getConfiguration('harbour').formatter;
+    var section = vscode.workspace.getConfiguration('ekonHarbour').formatter;
     // And set its HTML content
     const localResources = vscode.Uri.file(path.join(context.extensionPath,"formatter-settings"));
     const codiconsUri = vscode.Uri.joinPath(context.extensionUri, 'node_modules', '@vscode/codicons', 'dist');
@@ -46,7 +46,7 @@ function showEditor(context) {
     </head><body>`;
 
     for(let subZone in section) {
-        let k0 = `harbour.formatter.${subZone}`;
+        let k0 = `ekonHarbour.formatter.${subZone}`;
         html += `<h1>${localize(k0)}</h1><div>`
         for(let zone in section[subZone]) {
             let cnf = section[subZone][zone];
@@ -105,7 +105,7 @@ function onEditorMessage(m) {
 }
 
 function updateConfig(readedValue) {
-    var currValue = vscode.workspace.getConfiguration('harbour');
+    var currValue = vscode.workspace.getConfiguration('ekonHarbour');
     var section = readedValue.formatter;
     for(let subZone in section) {
         let k0 = `formatter.${subZone}`;

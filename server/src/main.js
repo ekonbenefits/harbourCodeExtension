@@ -145,11 +145,12 @@ connection.onDidChangeConfiguration(params => {
     var searchExclude = params.settings.search.exclude;
     // minimatch
     wordBasedSuggestions = params.settings.editor.wordBasedSuggestions
-    currStyleConfig = params.settings.harbour.formatter;
+    const hbSettings = params.settings.ekonHarbour || params.settings.harbour || {};
+    currStyleConfig = hbSettings.formatter || currStyleConfig;
     var oldDepth = workspaceDepth;
-    includeDirs = params.settings.harbour.extraIncludePaths;
+    includeDirs = hbSettings.extraIncludePaths || [];
     includeDirs.splice(0, 0, ".")
-    workspaceDepth = params.settings.harbour.workspaceDepth;
+    workspaceDepth = hbSettings.workspaceDepth || 0;
     if(workspaceDepth!=oldDepth)
         parseWorkspace();
 })

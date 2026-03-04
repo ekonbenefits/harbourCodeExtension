@@ -11,7 +11,7 @@ class HarbourDBGProvider {
     provideDebugConfigurations(folder,token) {
         return new getAllWorkspaceFiles(token).then((values)=>{
             var retValue = [{
-                "type": "harbour-dbg",
+                "type": "ekon-harbour-dbg",
                 "request": "launch",
                 "name": "Launch currentFile",
                 "preLaunchTask": localize("harbour.task.HBMK2.provideName3")
@@ -26,7 +26,7 @@ class HarbourDBGProvider {
                     var ext = path.extname(ff[i].name).toLowerCase();
                     if(ext==".hbp") {
                         var debugInfo = {
-                            "type": "harbour-dbg",
+                            "type": "ekon-harbour-dbg",
                             "request": "launch",
                             "name": "Launch currentFile",
                             "preLaunchTask": localize("harbour.task.HBMK2.provideName",path.basename(ff[i].name))
@@ -40,28 +40,29 @@ class HarbourDBGProvider {
     }
 
     resolveDebugConfiguration(folder, debugConfiguration, token) {
-        /*
-        var textDocument = {uri: {fsPath:""}};
-        if(vscode && vscode.window && vscode.window.activeTextEditor && vscode.window.activeTextEditor.document)
-            textDocument =vscode.window.activeTextEditor.document;
-        var task = new vscode.Task({
-                "type": "HBMK2",
-                "input": "${file}",
-                "debugSymbols": true,
-                "output": "${fileBasenameNoExtension}_dbg"
-            }, vscode.TaskScope.Global, localize("harbour.task.HBMK2.provideName3") ,"HBMK2");
-        */
-       return {
-            "type": "harbour-dbg",
-            "request": "launch",
-            "name": "Launch currentFile",
-            "preLaunchTask": localize("harbour.task.HBMK2.provideName3")
-        };
+        var cfg = Object.assign({}, debugConfiguration || {});
+        if(!cfg.type || cfg.type === "harbour-dbg" || cfg.type === "ekon-harbour-dbg") {
+            cfg.type = "ekon-harbour-dbg";
+        }
+        if(!cfg.request) {
+            cfg.request = "launch";
+        }
+        if(!cfg.name) {
+            cfg.name = "Launch currentFile";
+        }
+        if(!cfg.preLaunchTask) {
+            cfg.preLaunchTask = localize("harbour.task.HBMK2.provideName3");
+        }
+        if(typeof cfg.process === "string") {
+            cfg.process = cfg.process.replace(/harbour\.debugList/g, "ekon.harbour.debugList");
+        }
+        return cfg;
     }
 }
 
 function activate() {
-	vscode.debug.registerDebugConfigurationProvider("harbour-dbg", new HarbourDBGProvider());
+    vscode.debug.registerDebugConfigurationProvider("ekon-harbour-dbg", new HarbourDBGProvider());
+    vscode.debug.registerDebugConfigurationProvider("harbour-dbg", new HarbourDBGProvider());
 }
 
 exports.activate = activate;

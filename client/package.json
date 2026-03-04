@@ -1,8 +1,8 @@
 {
     "name": "harbour-full",
-    "displayName": "Harbour and xHarbour",
+    "displayName": "Ekon's Harbour and xHarbour",
     "description": "Harbour and xHarbour languages support for visual studio code",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "publisher": "ekon",
     "icon": "harbourIcon.png",
     "main": "./dist/extension",
@@ -11,8 +11,10 @@
     },
     "activationEvents": [
         "onLanguage:harbour",
-        "onCommand:harbour.getdbgcode",
-        "onCommand:harbour.setupCodeFormat",
+        "onCommand:ekon.harbour.getDbgCode",
+        "onCommand:ekon.harbour.setupCodeFormat",
+        "onCommand:ekon.harbour.migrateLegacyConfig",
+        "onCommand:ekon.harbour.migrateLegacySettings",
         "workspaceContains:**/*.prg"
     ],
     "engines": {
@@ -37,13 +39,14 @@
         "vscode:prepublish": "node copy.js",
         "prelanch": "webpack --mode development",
         "webpack2": "webpack --mode production",
-        "deploy": "vsce publish"
+        "deploy": "vsce publish",
+        "set-build-version": "node set-build-version.js"
     },
     "contributes": {
         "problemMatchers": [
             {
-                "name": "harbour",
-                "owner": "harbour",
+                "name": "ekon-harbour",
+                "owner": "ekon-harbour",
                 "fileLocation": "autoDetect",
                 "pattern": {
                     "regexp": "^(?:([^\\(]*)\\((\\d+)\\)\\s+)(Warning|Error)\\s+(.*)$",
@@ -56,34 +59,42 @@
         ],
         "commands": [
             {
-                "command": "harbour.getDbgCode",
+                "command": "ekon.harbour.getDbgCode",
                 "title": "%harbour.dbgCodeCmd%"
             },
             {
-                "command": "harbour.setupCodeFormat",
+                "command": "ekon.harbour.setupCodeFormat",
                 "title": "%harbour.formatter.cmd%"
+            },
+            {
+                "command": "ekon.harbour.migrateLegacyConfig",
+                "title": "Ekon Harbour: Migrate legacy launch/tasks"
+            },
+            {
+                "command": "ekon.harbour.migrateLegacySettings",
+                "title": "Ekon Harbour: Migrate legacy settings"
             }
         ],
         "configuration": {
             "type": "object",
             "title": "Harbour compiler",
             "properties": {
-                "harbour.validating": {
+                "ekonHarbour.validating": {
                     "type": "boolean",
                     "description": "%harbour.validating%",
                     "default": true
                 },
-                "harbour.compilerExecutable": {
+                "ekonHarbour.compilerExecutable": {
                     "type": "string",
                     "description": "%harbour.compilerExecutable%",
                     "default": "harbour"
                 },
-                "harbour.extraOptions": {
+                "ekonHarbour.extraOptions": {
                     "type": "string",
                     "description": "%harbour.extraOptions%",
                     "default": ""
                 },
-                "harbour.extraIncludePaths": {
+                "ekonHarbour.extraIncludePaths": {
                     "type": "array",
                     "description": "%harbour.extraIncludePaths%",
                     "items": {
@@ -91,55 +102,70 @@
                         "default": ""
                     }
                 },
-                "harbour.warningLevel": {
+                "ekonHarbour.warningLevel": {
                     "type": "number",
                     "default": 1,
                     "maximum": 3,
                     "minimum": 0,
                     "description": "%harbour.warningLevel%"
                 },
-                "harbour.decorator": {
+                "ekonHarbour.decorator": {
                     "type": "boolean",
                     "default": true,
                     "description": "%harbour.decorator%"
                 },
-                "harbour.workspaceDepth": {
+                "ekonHarbour.workspaceDepth": {
                     "type": "number",
                     "default": 0,
                     "minimum": 0,
                     "description": "%harbour.workspaceDepth%"
                 },
-                "harbour.formatter.indent.funcBody": {
+                "ekonHarbour.features.languageServer": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable language server features (completion, symbols, go to definition, formatting, etc.)."
+                },
+                "ekonHarbour.features.validation": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable diagnostics/lint validation from this extension."
+                },
+                "ekonHarbour.features.decorator": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable block pair decoration from this extension."
+                },
+                "ekonHarbour.formatter.indent.funcBody": {
                     "type": "boolean",
                     "description": "%harbour.formatter.indent.funcBody%",
                     "default": true
                 },
-                "harbour.formatter.indent.variables": {
+                "ekonHarbour.formatter.indent.variables": {
                     "type": "boolean",
                     "description": "%harbour.formatter.indent.local%",
                     "default": true
                 },
-                "harbour.formatter.indent.logical": {
+                "ekonHarbour.formatter.indent.logical": {
                     "type": "boolean",
                     "description": "%harbour.formatter.indent.logical%",
                     "default": true
                 },
-                "harbour.formatter.indent.cycle": {
+                "ekonHarbour.formatter.indent.cycle": {
                     "type": "boolean",
                     "description": "%harbour.formatter.indent.cycle%",
                     "default": true
                 },
-                "harbour.formatter.indent.switch": {
+                "ekonHarbour.formatter.indent.switch": {
                     "type": "boolean",
                     "description": "%harbour.formatter.indent.switch%",
                     "default": true
                 },
-                "harbour.formatter.indent.case": {
+                "ekonHarbour.formatter.indent.case": {
                     "type": "boolean",
                     "description": "%harbour.formatter.indent.case%",
                     "default": true
                 },
-                "harbour.formatter.replace.not": {
+                "ekonHarbour.formatter.replace.not": {
                     "type": "string",
                     "description": "%harbour.formatter.replace.not%",
                     "enum": [
@@ -149,7 +175,7 @@
                     ],
                     "default": "use !"
                 },
-                "harbour.formatter.replace.asterisk": {
+                "ekonHarbour.formatter.replace.asterisk": {
                     "type": "string",
                     "description": "%harbour.formatter.replace.asterisk%",
                     "enum": [
@@ -160,7 +186,7 @@
                     ],
                     "default": "use //"
                 },
-                "harbour.formatter.replace.amp": {
+                "ekonHarbour.formatter.replace.amp": {
                     "type": "string",
                     "description": "%harbour.formatter.replace.amp%",
                     "enum": [
@@ -208,7 +234,7 @@
         ],
         "debuggers": [
             {
-                "type": "harbour-dbg",
+                "type": "ekon-harbour-dbg",
                 "label": "Harbour",
                 "program": "./dist/debugger.js",
                 "runtime": "node",
@@ -217,7 +243,7 @@
                 ],
                 "initialConfigurations": [
                     {
-                        "type": "harbour-dbg",
+                        "type": "ekon-harbour-dbg",
                         "request": "launch",
                         "name": "%harbour.initialConfigurations%",
                         "program": "${workspaceFolder}/Program",
@@ -232,7 +258,7 @@
                         "label": "Harbour launch",
                         "description": "%harbour.configurationSnippetsDesc%",
                         "body": {
-                            "type": "harbour-dbg",
+                            "type": "ekon-harbour-dbg",
                             "request": "launch",
                             "name": "%harbour.configurationSnippets%",
                             "program": "^\"\\${workspaceFolder}/${2:Program}\"",
@@ -244,7 +270,7 @@
                         "label": "Harbour attach program",
                         "description": "%harbour.configurationSnippetsDesc2%",
                         "body": {
-                            "type": "harbour-dbg",
+                            "type": "ekon-harbour-dbg",
                             "request": "attach",
                             "name": "%harbour.configurationSnippets2%",
                             "program": "^\"\\${workspaceFolder}/${2:Program}\"",
@@ -255,7 +281,7 @@
                         "label": "Harbour attach process",
                         "description": "%harbour.configurationSnippetsDesc2%",
                         "body": {
-                            "type": "harbour-dbg",
+                            "type": "ekon-harbour-dbg",
                             "request": "attach",
                             "name": "%harbour.configurationSnippets2%",
                             "process": "${2:processId}",
@@ -266,7 +292,7 @@
                         "label": "Harbour attach selectProcess",
                         "description": "%harbour.configurationSnippetsDesc3%",
                         "body": {
-                            "type": "harbour-dbg",
+                            "type": "ekon-harbour-dbg",
                             "request": "attach",
                             "name": "%harbour.configurationSnippets3%",
                             "process": "^\"\\${command:pickProcess}\"",
@@ -275,7 +301,7 @@
                     }
                 ],
                 "variables": {
-                    "pickProcess": "harbour.debugList"
+                    "pickProcess": "ekon.harbour.debugList"
                 },
                 "configurationAttributes": {
                     "launch": {
@@ -391,7 +417,7 @@
         ],
         "taskDefinitions": [
             {
-                "type": "Harbour",
+                "type": "EkonHarbour",
                 "required": [
                     "output"
                 ],
@@ -423,7 +449,7 @@
                 }
             },
             {
-                "type": "HBMK2",
+                "type": "EkonHBMK2",
                 "required": [
                     "input"
                 ],

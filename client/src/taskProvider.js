@@ -58,7 +58,7 @@ class HRBTask {
     }
 
     GetArgs(fileName) {
-        var section = vscode.workspace.getConfiguration('harbour');
+        var section = vscode.workspace.getConfiguration('ekonHarbour');
         var args = ["-w"+section.warningLevel, fileName ];
         for (var i = 0; i < section.extraIncludePaths.length; i++) {
             var pathVal = resolvePredefinedVariables(section.extraIncludePaths[i]);
@@ -73,26 +73,26 @@ class HRBTask {
             textDocument =vscode.window.activeTextEditor.document;
         var retValue = [];
     	if(textDocument && textDocument.languageId == 'harbour' ) {
-            var section = vscode.workspace.getConfiguration('harbour');
+            var section = vscode.workspace.getConfiguration('ekonHarbour');
             var args = this.GetArgs(textDocument.fileName);
             var file_cwd = path.dirname(textDocument.fileName);
             retValue.push(new vscode.Task({
-                    "type": "Harbour",
+                    "type": "EkonHarbour",
                     "input": "${file}",
                     "output": "portable"
                 }, vscode.TaskScope.Workspace, localize("harbour.task.portableName"),"Harbour",
                 new vscode.ShellExecution(section.compilerExecutable,args.concat(["-gh"]),{
                     cwd: file_cwd
-                }),"$harbour"));
+                }),"$ekon-harbour"));
             retValue.push(new vscode.Task({
-                    "type": "Harbour",
+                    "type": "EkonHarbour",
                     "input": "${file}",
                     "output": "C code",
                     "c-type": "compact"
                 }, vscode.TaskScope.Workspace, localize("harbour.task.cCodeName"),"Harbour",
                 new vscode.ShellExecution(section.compilerExecutable,args.concat(["-gc0"]),{
                     cwd: file_cwd
-                }),"$harbour"));
+                }),"$ekon-harbour"));
         }
         return retValue;
     }
@@ -120,12 +120,12 @@ class HRBTask {
         } else
             args = args.concat(["-gh"]);
         var file_cwd = path.dirname(vscode.window.activeTextEditor.document.fileName);
-        var section = vscode.workspace.getConfiguration('harbour');
+        var section = vscode.workspace.getConfiguration('ekonHarbour');
         retTask.execution = new vscode.ShellExecution(section.compilerExecutable,args.concat(["-gc"]),{
             cwd: file_cwd
         });
         if(!Array.isArray(task.problemMatchers) || task.problemMatchers.length==0 )
-            retTask.problemMatchers = ["$harbour"];
+            retTask.problemMatchers = ["$ekon-harbour"];
         else
             retTask.problemMatchers = task.problemMatchers;
         return retTask;
@@ -297,7 +297,7 @@ class HBMK2Terminal {
             this.closeEvt(0);
         var task = this.tasks.splice(0,1)[0];
         var inputFile = ToAbsolute(resolvePredefinedVariables(task.definition.input)) || task.definition.input;
-        var section = vscode.workspace.getConfiguration('harbour');
+        var section = vscode.workspace.getConfiguration('ekonHarbour');
 
         var args = [inputFile, "-w"+section.warningLevel];
         if(task.definition.debugSymbols) {
@@ -336,14 +336,14 @@ class HBMK2Terminal {
 class HBMK2Task {
     getValidTask(name,input, definition, problemMatches) {
         var retTask = new vscode.Task({
-            "type": "HBMK2",
+            "type": "EkonHBMK2",
             "input": input
             //"c-type": "compact"
         }, vscode.TaskScope.Workspace, name ,"HBMK2");
         retTask.definition = definition;
         retTask.execution = new vscode.CustomExecution(getTerminalFn(retTask));
         if(!Array.isArray(problemMatches) || problemMatches.length==0 )
-            retTask.problemMatchers = ["$harbour","$msCompile"];
+            retTask.problemMatchers = ["$ekon-harbour","$msCompile"];
         return retTask;
     }
 
@@ -362,19 +362,19 @@ class HBMK2Task {
                 textDocument =vscode.window.activeTextEditor.document;
             if(textDocument && textDocument.languageId == 'harbour' ) {
                 var task = new vscode.Task({
-                    "type": "HBMK2",
+                    "type": "EkonHBMK2",
                     "input": "${file}"
                 }, vscode.TaskScope.Workspace, localize("harbour.task.HBMK2.provideName2") ,"HBMK2");
                 task.execution = new vscode.CustomExecution(getTerminalFn(task));
-                task.problemMatchers = ["$harbour","$msCompile"];
+                task.problemMatchers = ["$ekon-harbour","$msCompile"];
                 var task2 = new vscode.Task({
-                    "type": "HBMK2",
+                    "type": "EkonHBMK2",
                     "input": "${file}",
                     "debugSymbols": true,
                     "output": "${fileBasenameNoExtension}_dbg"
                 }, vscode.TaskScope.Workspace, localize("harbour.task.HBMK2.provideName3") ,"HBMK2");
                 task2.execution = new vscode.CustomExecution(getTerminalFn(task));
-                task2.problemMatchers = ["$harbour","$msCompile"];
+                task2.problemMatchers = ["$ekon-harbour","$msCompile"];
                 retValue.push(task,task2);
             }
             getAllWorkspaceFiles(token).then((values)=>{
@@ -389,12 +389,12 @@ class HBMK2Task {
                         var ext = path.extname(ff[i].name).toLowerCase();
                         if(ext==".hbp") {
                             var task = new vscode.Task({
-                                    "type": "HBMK2",
+                                    "type": "EkonHBMK2",
                                     "input": ff[i].name
                                 }, vscode.TaskScope.Workspace,
                                 localize("harbour.task.HBMK2.provideName",path.basename(ff[i].name)) ,"HBMK2");
                             task.execution = new vscode.CustomExecution(getTerminalFn(task));
-                            task.problemMatchers = ["$harbour","$msCompile"];
+                            task.problemMatchers = ["$ekon-harbour","$msCompile"];
                             retValue.push(task);
                         }
                     }
@@ -414,7 +414,7 @@ class HBMK2Task {
                 "build "+task.definition.input ,"HBMK2");
         retTask.execution = new vscode.CustomExecution(getTerminalFn(retTask));
         if(!Array.isArray(task.problemMatchers) || task.problemMatchers.length==0 )
-            retTask.problemMatchers = ["$harbour","$msCompile"];
+            retTask.problemMatchers = ["$ekon-harbour","$msCompile"];
         else
             retTask.problemMatchers = task.problemMatchers;
         return retTask;
@@ -422,8 +422,13 @@ class HBMK2Task {
 }
 
 function activate() {
-	vscode.tasks.registerTaskProvider("Harbour", new HRBTask());
-	vscode.tasks.registerTaskProvider("HBMK2", new HBMK2Task());
+    const hrbProvider = new HRBTask();
+    const hbmk2Provider = new HBMK2Task();
+    vscode.tasks.registerTaskProvider("EkonHarbour", hrbProvider);
+    vscode.tasks.registerTaskProvider("EkonHBMK2", hbmk2Provider);
+    // Legacy aliases keep old tasks.json working while users migrate.
+    vscode.tasks.registerTaskProvider("Harbour", hrbProvider);
+    vscode.tasks.registerTaskProvider("HBMK2", hbmk2Provider);
 }
 
 exports.activate = activate;
