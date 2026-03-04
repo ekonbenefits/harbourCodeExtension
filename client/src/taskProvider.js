@@ -58,7 +58,7 @@ class HRBTask {
     }
 
     GetArgs(fileName) {
-        var section = vscode.workspace.getConfiguration('harbour');
+        var section = vscode.workspace.getConfiguration('ekonHarbour');
         var args = ["-w"+section.warningLevel, fileName ];
         for (var i = 0; i < section.extraIncludePaths.length; i++) {
             var pathVal = resolvePredefinedVariables(section.extraIncludePaths[i]);
@@ -73,7 +73,7 @@ class HRBTask {
             textDocument =vscode.window.activeTextEditor.document;
         var retValue = [];
     	if(textDocument && textDocument.languageId == 'harbour' ) {
-            var section = vscode.workspace.getConfiguration('harbour');
+            var section = vscode.workspace.getConfiguration('ekonHarbour');
             var args = this.GetArgs(textDocument.fileName);
             var file_cwd = path.dirname(textDocument.fileName);
             retValue.push(new vscode.Task({
@@ -120,7 +120,7 @@ class HRBTask {
         } else
             args = args.concat(["-gh"]);
         var file_cwd = path.dirname(vscode.window.activeTextEditor.document.fileName);
-        var section = vscode.workspace.getConfiguration('harbour');
+        var section = vscode.workspace.getConfiguration('ekonHarbour');
         retTask.execution = new vscode.ShellExecution(section.compilerExecutable,args.concat(["-gc"]),{
             cwd: file_cwd
         });
@@ -297,7 +297,7 @@ class HBMK2Terminal {
             this.closeEvt(0);
         var task = this.tasks.splice(0,1)[0];
         var inputFile = ToAbsolute(resolvePredefinedVariables(task.definition.input)) || task.definition.input;
-        var section = vscode.workspace.getConfiguration('harbour');
+        var section = vscode.workspace.getConfiguration('ekonHarbour');
 
         var args = [inputFile, "-w"+section.warningLevel];
         if(task.definition.debugSymbols) {

@@ -68,22 +68,22 @@
             "type": "object",
             "title": "Harbour compiler",
             "properties": {
-                "harbour.validating": {
+                "ekonHarbour.validating": {
                     "type": "boolean",
                     "description": "%harbour.validating%",
                     "default": true
                 },
-                "harbour.compilerExecutable": {
+                "ekonHarbour.compilerExecutable": {
                     "type": "string",
                     "description": "%harbour.compilerExecutable%",
                     "default": "harbour"
                 },
-                "harbour.extraOptions": {
+                "ekonHarbour.extraOptions": {
                     "type": "string",
                     "description": "%harbour.extraOptions%",
                     "default": ""
                 },
-                "harbour.extraIncludePaths": {
+                "ekonHarbour.extraIncludePaths": {
                     "type": "array",
                     "description": "%harbour.extraIncludePaths%",
                     "items": {
@@ -91,55 +91,55 @@
                         "default": ""
                     }
                 },
-                "harbour.warningLevel": {
+                "ekonHarbour.warningLevel": {
                     "type": "number",
                     "default": 1,
                     "maximum": 3,
                     "minimum": 0,
                     "description": "%harbour.warningLevel%"
                 },
-                "harbour.decorator": {
+                "ekonHarbour.decorator": {
                     "type": "boolean",
                     "default": true,
                     "description": "%harbour.decorator%"
                 },
-                "harbour.workspaceDepth": {
+                "ekonHarbour.workspaceDepth": {
                     "type": "number",
                     "default": 0,
                     "minimum": 0,
                     "description": "%harbour.workspaceDepth%"
                 },
-                "harbour.formatter.indent.funcBody": {
+                "ekonHarbour.formatter.indent.funcBody": {
                     "type": "boolean",
                     "description": "%harbour.formatter.indent.funcBody%",
                     "default": true
                 },
-                "harbour.formatter.indent.variables": {
+                "ekonHarbour.formatter.indent.variables": {
                     "type": "boolean",
                     "description": "%harbour.formatter.indent.local%",
                     "default": true
                 },
-                "harbour.formatter.indent.logical": {
+                "ekonHarbour.formatter.indent.logical": {
                     "type": "boolean",
                     "description": "%harbour.formatter.indent.logical%",
                     "default": true
                 },
-                "harbour.formatter.indent.cycle": {
+                "ekonHarbour.formatter.indent.cycle": {
                     "type": "boolean",
                     "description": "%harbour.formatter.indent.cycle%",
                     "default": true
                 },
-                "harbour.formatter.indent.switch": {
+                "ekonHarbour.formatter.indent.switch": {
                     "type": "boolean",
                     "description": "%harbour.formatter.indent.switch%",
                     "default": true
                 },
-                "harbour.formatter.indent.case": {
+                "ekonHarbour.formatter.indent.case": {
                     "type": "boolean",
                     "description": "%harbour.formatter.indent.case%",
                     "default": true
                 },
-                "harbour.formatter.replace.not": {
+                "ekonHarbour.formatter.replace.not": {
                     "type": "string",
                     "description": "%harbour.formatter.replace.not%",
                     "enum": [
@@ -149,7 +149,7 @@
                     ],
                     "default": "use !"
                 },
-                "harbour.formatter.replace.asterisk": {
+                "ekonHarbour.formatter.replace.asterisk": {
                     "type": "string",
                     "description": "%harbour.formatter.replace.asterisk%",
                     "enum": [
@@ -160,7 +160,7 @@
                     ],
                     "default": "use //"
                 },
-                "harbour.formatter.replace.amp": {
+                "ekonHarbour.formatter.replace.amp": {
                     "type": "string",
                     "description": "%harbour.formatter.replace.amp%",
                     "enum": [

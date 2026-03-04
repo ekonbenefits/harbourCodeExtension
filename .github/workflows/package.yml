@@ -29,9 +29,10 @@ jobs:
         run: npx @vscode/vsce package
         working-directory: ./client
       - name: upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: harbour-full
+          archive: false
           path: ./client/harbour-full-*.vsix
           retention-days: 5
 

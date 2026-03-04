@@ -29,7 +29,7 @@ function activate(context) {
 	var clientOptions = {
 		documentSelector: ['harbour'],
 		synchronize: {
-			configurationSection: ['harbour','search','editor']
+			configurationSection: ['ekonHarbour','search','editor']
 		}
 	}
 	var cl = new client.LanguageClient('HarbourServer', 'Harbour Server', serverOptions, clientOptions);

@@ -29,7 +29,7 @@ function validate(textDocument)
 {
 	if(textDocument.languageId !== 'harbour' )
 		return;
-	var section = vscode.workspace.getConfiguration('harbour');
+	var section = vscode.workspace.getConfiguration('ekonHarbour');
 	if(!section.validating)
 		return;
 	var args = ["-s", "-q0", "-m", "-n0", "-w"+section.warningLevel, textDocument.fileName ];
