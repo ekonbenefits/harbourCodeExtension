@@ -9,7 +9,52 @@ const taskProvider = require('./taskProvider.js');
 const net = require("net");
 const formatEditor = require("./formatEditor.js");
 
+const SETTINGS_MIGRATION_KEY = "ekonHarbour.settingsMigration.v1";
+const SETTINGS_TO_MIGRATE = [
+	"validating",
+	"compilerExecutable",
+	"extraOptions",
+	"extraIncludePaths",
+	"warningLevel",
+	"decorator",
+	"workspaceDepth",
+	"formatter.indent.funcBody",
+	"formatter.indent.variables",
+	"formatter.indent.logical",
+	"formatter.indent.cycle",
+	"formatter.indent.switch",
+	"formatter.indent.case",
+	"formatter.replace.not",
+	"formatter.replace.asterisk",
+	"formatter.replace.amp"
+];
+
+async function migrateLegacySettings(context) {
+	if (context.globalState.get(SETTINGS_MIGRATION_KEY)) {
+		return;
+	}
+	const oldConfig = vscode.workspace.getConfiguration("harbour");
+	const newConfig = vscode.workspace.getConfiguration("ekonHarbour");
+	for (const setting of SETTINGS_TO_MIGRATE) {
+		const oldValue = oldConfig.inspect(setting);
+		const newValue = newConfig.inspect(setting);
+		if (oldValue && newValue) {
+			if (newValue.globalValue === undefined && oldValue.globalValue !== undefined) {
+				await newConfig.update(setting, oldValue.globalValue, vscode.ConfigurationTarget.Global);
+			}
+			if (newValue.workspaceValue === undefined && oldValue.workspaceValue !== undefined) {
+				await newConfig.update(setting, oldValue.workspaceValue, vscode.ConfigurationTarget.Workspace);
+			}
+			if (newValue.workspaceFolderValue === undefined && oldValue.workspaceFolderValue !== undefined) {
+				await newConfig.update(setting, oldValue.workspaceFolderValue, vscode.ConfigurationTarget.WorkspaceFolder);
+			}
+		}
+	}
+	await context.globalState.update(SETTINGS_MIGRATION_KEY, true);
+}
+
 function activate(context) {
+	migrateLegacySettings(context).catch(() => {});
 	vscode.languages.setLanguageConfiguration('harbour', {
 		indentationRules: {
 			increaseIndentPattern: /^\s*((?:(?:static|init|exit)\s+)?(?:proc(?:e(?:d(?:u(?:r(?:e)?)?)?)?)?|func(?:t(?:i(?:o(?:n)?)?)?)?)|class(?!\s*(?:var|data|method))|method|if|else(?:if)?|for|if|try|case|otherwise|(?:do\s+)?while|switch|begin)\b/i,
@@ -29,7 +74,7 @@ function activate(context) {
 	var clientOptions = {
 		documentSelector: ['harbour'],
 		synchronize: {
-			configurationSection: ['ekonHarbour','search','editor']
+			configurationSection: ['ekonHarbour','harbour','search','editor']
 		}
 	}
 	var cl = new client.LanguageClient('HarbourServer', 'Harbour Server', serverOptions, clientOptions);
