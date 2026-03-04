@@ -35,14 +35,14 @@ function activate(context) {
 	var cl = new client.LanguageClient('HarbourServer', 'Harbour Server', serverOptions, clientOptions);
 	cl.registerProposedFeatures()
 	context.subscriptions.push(cl.start());
-	vscode.commands.registerCommand('harbour.getDbgCode', () => { getDbgCode(context); })
-	vscode.commands.registerCommand("harbour.debugList", DebugList)
-	vscode.commands.registerCommand("harbour.setupCodeFormat", () => { formatEditor.showEditor(context); })
+	vscode.commands.registerCommand('ekon.harbour.getDbgCode', () => { getDbgCode(context); })
+	vscode.commands.registerCommand("ekon.harbour.debugList", DebugList)
+	vscode.commands.registerCommand("ekon.harbour.setupCodeFormat", () => { formatEditor.showEditor(context); })
 	decorator.activate(context,cl);
 	docCreator.activate(context,cl);
 	taskProvider.activate();	
 	// https://code.visualstudio.com/updates/v1_30#:~:text=Finalized%20Debug%20Adapter%20Tracker%20API
-	/*vscode.debug.registerDebugAdapterTrackerFactory('harbour-dbg', {
+	/*vscode.debug.registerDebugAdapterTrackerFactory('ekon-harbour-dbg', {
 		createDebugAdapterTracker(  ) {
 		  return {
 			onWillReceiveMessage: m => console.log(`> ${m.seq} - C ${m.command} - ${m.arguments? JSON.stringify(m.arguments).substring(0,50) : "no-args"}`),

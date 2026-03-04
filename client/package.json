@@ -1,6 +1,6 @@
 {
     "name": "harbour-full",
-    "displayName": "Harbour and xHarbour",
+    "displayName": "Ekon's Harbour and xHarbour",
     "description": "Harbour and xHarbour languages support for visual studio code",
     "version": "1.0.7",
     "publisher": "ekon",
@@ -11,8 +11,8 @@
     },
     "activationEvents": [
         "onLanguage:harbour",
-        "onCommand:harbour.getdbgcode",
-        "onCommand:harbour.setupCodeFormat",
+        "onCommand:ekon.harbour.getDbgCode",
+        "onCommand:ekon.harbour.setupCodeFormat",
         "workspaceContains:**/*.prg"
     ],
     "engines": {
@@ -42,8 +42,8 @@
     "contributes": {
         "problemMatchers": [
             {
-                "name": "harbour",
-                "owner": "harbour",
+                "name": "ekon-harbour",
+                "owner": "ekon-harbour",
                 "fileLocation": "autoDetect",
                 "pattern": {
                     "regexp": "^(?:([^\\(]*)\\((\\d+)\\)\\s+)(Warning|Error)\\s+(.*)$",
@@ -56,11 +56,11 @@
         ],
         "commands": [
             {
-                "command": "harbour.getDbgCode",
+                "command": "ekon.harbour.getDbgCode",
                 "title": "%harbour.dbgCodeCmd%"
             },
             {
-                "command": "harbour.setupCodeFormat",
+                "command": "ekon.harbour.setupCodeFormat",
                 "title": "%harbour.formatter.cmd%"
             }
         ],
@@ -208,7 +208,7 @@
         ],
         "debuggers": [
             {
-                "type": "harbour-dbg",
+                "type": "ekon-harbour-dbg",
                 "label": "Harbour",
                 "program": "./dist/debugger.js",
                 "runtime": "node",
@@ -217,7 +217,7 @@
                 ],
                 "initialConfigurations": [
                     {
-                        "type": "harbour-dbg",
+                        "type": "ekon-harbour-dbg",
                         "request": "launch",
                         "name": "%harbour.initialConfigurations%",
                         "program": "${workspaceFolder}/Program",
@@ -232,7 +232,7 @@
                         "label": "Harbour launch",
                         "description": "%harbour.configurationSnippetsDesc%",
                         "body": {
-                            "type": "harbour-dbg",
+                            "type": "ekon-harbour-dbg",
                             "request": "launch",
                             "name": "%harbour.configurationSnippets%",
                             "program": "^\"\\${workspaceFolder}/${2:Program}\"",
@@ -244,7 +244,7 @@
                         "label": "Harbour attach program",
                         "description": "%harbour.configurationSnippetsDesc2%",
                         "body": {
-                            "type": "harbour-dbg",
+                            "type": "ekon-harbour-dbg",
                             "request": "attach",
                             "name": "%harbour.configurationSnippets2%",
                             "program": "^\"\\${workspaceFolder}/${2:Program}\"",
@@ -255,7 +255,7 @@
                         "label": "Harbour attach process",
                         "description": "%harbour.configurationSnippetsDesc2%",
                         "body": {
-                            "type": "harbour-dbg",
+                            "type": "ekon-harbour-dbg",
                             "request": "attach",
                             "name": "%harbour.configurationSnippets2%",
                             "process": "${2:processId}",
@@ -266,7 +266,7 @@
                         "label": "Harbour attach selectProcess",
                         "description": "%harbour.configurationSnippetsDesc3%",
                         "body": {
-                            "type": "harbour-dbg",
+                            "type": "ekon-harbour-dbg",
                             "request": "attach",
                             "name": "%harbour.configurationSnippets3%",
                             "process": "^\"\\${command:pickProcess}\"",
@@ -275,7 +275,7 @@
                     }
                 ],
                 "variables": {
-                    "pickProcess": "harbour.debugList"
+                    "pickProcess": "ekon.harbour.debugList"
                 },
                 "configurationAttributes": {
                     "launch": {
@@ -391,7 +391,7 @@
         ],
         "taskDefinitions": [
             {
-                "type": "Harbour",
+                "type": "EkonHarbour",
                 "required": [
                     "output"
                 ],
@@ -423,7 +423,7 @@
                 }
             },
             {
-                "type": "HBMK2",
+                "type": "EkonHBMK2",
                 "required": [
                     "input"
                 ],

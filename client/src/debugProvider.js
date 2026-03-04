@@ -11,7 +11,7 @@ class HarbourDBGProvider {
     provideDebugConfigurations(folder,token) {
         return new getAllWorkspaceFiles(token).then((values)=>{
             var retValue = [{
-                "type": "harbour-dbg",
+                "type": "ekon-harbour-dbg",
                 "request": "launch",
                 "name": "Launch currentFile",
                 "preLaunchTask": localize("harbour.task.HBMK2.provideName3")
@@ -26,7 +26,7 @@ class HarbourDBGProvider {
                     var ext = path.extname(ff[i].name).toLowerCase();
                     if(ext==".hbp") {
                         var debugInfo = {
-                            "type": "harbour-dbg",
+                            "type": "ekon-harbour-dbg",
                             "request": "launch",
                             "name": "Launch currentFile",
                             "preLaunchTask": localize("harbour.task.HBMK2.provideName",path.basename(ff[i].name))
@@ -52,7 +52,7 @@ class HarbourDBGProvider {
             }, vscode.TaskScope.Global, localize("harbour.task.HBMK2.provideName3") ,"HBMK2");
         */
        return {
-            "type": "harbour-dbg",
+            "type": "ekon-harbour-dbg",
             "request": "launch",
             "name": "Launch currentFile",
             "preLaunchTask": localize("harbour.task.HBMK2.provideName3")
@@ -61,7 +61,7 @@ class HarbourDBGProvider {
 }
 
 function activate() {
-	vscode.debug.registerDebugConfigurationProvider("harbour-dbg", new HarbourDBGProvider());
+    vscode.debug.registerDebugConfigurationProvider("ekon-harbour-dbg", new HarbourDBGProvider());
 }
 
 exports.activate = activate;
