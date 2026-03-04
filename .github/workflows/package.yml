@@ -2,9 +2,8 @@ on:
   push:
     branches:
       - master
+      - deploy
   pull_request:
-    branches:
-      - master
 
 jobs:
   package:
@@ -25,14 +24,14 @@ jobs:
       - name: Install server dependencies
         run: npm install
         working-directory: ./server
-      - name: Add CI build number to extension version (PR only)
-        if: github.event_name == 'pull_request'
+      - name: Add CI build number to extension version (except deploy)
+        if: github.event_name != 'push' || github.ref != 'refs/heads/deploy'
         run: npm run set-build-version -- ${{ github.run_number }}
         working-directory: ./client
       - name: Make VSIX
         run: npx @vscode/vsce package
         working-directory: ./client
-      - name: upload artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
           name: harbour-full
@@ -40,3 +39,28 @@ jobs:
           path: ./client/harbour-full-*.vsix
           retention-days: 5
 
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/deploy'
+    needs: package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Read extension version
+        id: extension_version
+        run: echo "version=$(node -p \"require('./client/package.json').version\")" >> "$GITHUB_OUTPUT"
+      - name: Download built VSIX artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: harbour-full
+          path: ./artifacts
+          skip-decompress: true
+      - name: Create GitHub release with VSIX
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.extension_version.outputs.version }}
+          name: Release ${{ steps.extension_version.outputs.version }}
+          generate_release_notes: true
+          files: ./artifacts/*.vsix
