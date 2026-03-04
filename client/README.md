@@ -52,6 +52,9 @@ When accepted, original files are preserved as `.bak` backups.
 You can also run migration manually at any time with command:
 `Ekon Harbour: Migrate legacy launch/tasks`.
 
+You can also migrate settings manually at any time with command:
+`Ekon Harbour: Migrate legacy settings`.
+
 ### Coexistence tip
 If both upstream and this fork are installed, use `ekonHarbour.features.*` to disable overlapping providers in one extension so results stay predictable.
 

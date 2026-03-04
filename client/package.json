@@ -14,6 +14,7 @@
         "onCommand:ekon.harbour.getDbgCode",
         "onCommand:ekon.harbour.setupCodeFormat",
         "onCommand:ekon.harbour.migrateLegacyConfig",
+        "onCommand:ekon.harbour.migrateLegacySettings",
         "workspaceContains:**/*.prg"
     ],
     "engines": {
@@ -68,6 +69,10 @@
             {
                 "command": "ekon.harbour.migrateLegacyConfig",
                 "title": "Ekon Harbour: Migrate legacy launch/tasks"
+            },
+            {
+                "command": "ekon.harbour.migrateLegacySettings",
+                "title": "Ekon Harbour: Migrate legacy settings"
             }
         ],
         "configuration": {

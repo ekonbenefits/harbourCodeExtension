@@ -227,8 +227,9 @@ async function runLegacyConfigMigrationCommand() {
 
 async function migrateLegacySettings(context) {
 	if (context.globalState.get(SETTINGS_MIGRATION_KEY)) {
-		return;
+		return 0;
 	}
+	let migratedCount = 0;
 	const oldConfig = vscode.workspace.getConfiguration("harbour");
 	const newConfig = vscode.workspace.getConfiguration("ekonHarbour");
 	for (const setting of SETTINGS_TO_MIGRATE) {
@@ -238,11 +239,13 @@ async function migrateLegacySettings(context) {
 			if (newValue.globalValue === undefined && oldValue.globalValue !== undefined) {
 				try {
 					await newConfig.update(setting, oldValue.globalValue, vscode.ConfigurationTarget.Global);
+					migratedCount++;
 				} catch (_err) {}
 			}
 			if (newValue.workspaceValue === undefined && oldValue.workspaceValue !== undefined) {
 				try {
 					await newConfig.update(setting, oldValue.workspaceValue, vscode.ConfigurationTarget.Workspace);
+					migratedCount++;
 				} catch (_err) {}
 			}
 		}
@@ -263,12 +266,23 @@ async function migrateLegacySettings(context) {
 				if (newFolderValue.workspaceFolderValue === undefined && oldFolderValue.workspaceFolderValue !== undefined) {
 					try {
 						await newFolderConfig.update(setting, oldFolderValue.workspaceFolderValue, vscode.ConfigurationTarget.WorkspaceFolder);
+						migratedCount++;
 					} catch (_err) {}
 				}
 			}
 		}
 	}
 	await context.globalState.update(SETTINGS_MIGRATION_KEY, true);
+	return migratedCount;
+}
+
+async function runLegacySettingsMigrationCommand(context) {
+	const previousState = context.globalState.get(SETTINGS_MIGRATION_KEY);
+	if (previousState) {
+		await context.globalState.update(SETTINGS_MIGRATION_KEY, false);
+	}
+	const migratedCount = await migrateLegacySettings(context);
+	vscode.window.showInformationMessage(`Ekon Harbour settings migration complete. Updated ${migratedCount} value(s).`);
 }
 
 function activate(context) {
@@ -312,6 +326,7 @@ function activate(context) {
 	vscode.commands.registerCommand("ekon.harbour.debugList", DebugList)
 	vscode.commands.registerCommand("ekon.harbour.setupCodeFormat", () => { formatEditor.showEditor(context); })
 	vscode.commands.registerCommand("ekon.harbour.migrateLegacyConfig", () => { runLegacyConfigMigrationCommand(); })
+	vscode.commands.registerCommand("ekon.harbour.migrateLegacySettings", () => { runLegacySettingsMigrationCommand(context); })
 	if (cl) {
 		if (decoratorFeatureEnabled) {
 			decorator.activate(context,cl);
