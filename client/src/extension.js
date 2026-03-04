@@ -9,7 +9,7 @@ const taskProvider = require('./taskProvider.js');
 const net = require("net");
 const formatEditor = require("./formatEditor.js");
 
-const SETTINGS_MIGRATION_KEY = "ekonHarbour.settingsMigration.v1";
+const SETTINGS_MIGRATION_KEY = "ekonHarbour.settingsMigration.v2";
 const LEGACY_CONFIG_PROMPT_KEY = "ekonHarbour.legacyConfigPrompt.v1";
 const SETTINGS_TO_MIGRATE = [
 	"validating",
@@ -236,13 +236,35 @@ async function migrateLegacySettings(context) {
 		const newValue = newConfig.inspect(setting);
 		if (oldValue && newValue) {
 			if (newValue.globalValue === undefined && oldValue.globalValue !== undefined) {
-				await newConfig.update(setting, oldValue.globalValue, vscode.ConfigurationTarget.Global);
+				try {
+					await newConfig.update(setting, oldValue.globalValue, vscode.ConfigurationTarget.Global);
+				} catch (_err) {}
 			}
 			if (newValue.workspaceValue === undefined && oldValue.workspaceValue !== undefined) {
-				await newConfig.update(setting, oldValue.workspaceValue, vscode.ConfigurationTarget.Workspace);
+				try {
+					await newConfig.update(setting, oldValue.workspaceValue, vscode.ConfigurationTarget.Workspace);
+				} catch (_err) {}
 			}
-			if (newValue.workspaceFolderValue === undefined && oldValue.workspaceFolderValue !== undefined) {
-				await newConfig.update(setting, oldValue.workspaceFolderValue, vscode.ConfigurationTarget.WorkspaceFolder);
+		}
+	}
+
+	// Folder-scoped values (for example include paths in .vscode/settings.json)
+	// must be migrated using folder-scoped configuration objects.
+	if (vscode.workspace.workspaceFolders) {
+		for (const folder of vscode.workspace.workspaceFolders) {
+			const oldFolderConfig = vscode.workspace.getConfiguration("harbour", folder.uri);
+			const newFolderConfig = vscode.workspace.getConfiguration("ekonHarbour", folder.uri);
+			for (const setting of SETTINGS_TO_MIGRATE) {
+				const oldFolderValue = oldFolderConfig.inspect(setting);
+				const newFolderValue = newFolderConfig.inspect(setting);
+				if (!oldFolderValue || !newFolderValue) {
+					continue;
+				}
+				if (newFolderValue.workspaceFolderValue === undefined && oldFolderValue.workspaceFolderValue !== undefined) {
+					try {
+						await newFolderConfig.update(setting, oldFolderValue.workspaceFolderValue, vscode.ConfigurationTarget.WorkspaceFolder);
+					} catch (_err) {}
+				}
 			}
 		}
 	}
