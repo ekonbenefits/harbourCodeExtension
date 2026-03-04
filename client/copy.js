@@ -4,7 +4,7 @@ const cmd = /^win/.test(platform)
   ? `..\\server\\copy.bat`
   : `../server/copy.sh`
 
-spawn(cmd, [], { stdio: "inherit", cwd:"../server/" }).on("exit", code => {
+spawn(cmd, [], { stdio: "inherit", cwd:"../server/", shell:true }).on("exit", code => {
   const pjson = require('./package.json');
   //console.log(pjson.version);
   const fs = require('fs');
