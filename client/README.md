@@ -49,6 +49,9 @@ On first activation, this fork copies legacy `harbour.*` values into `ekonHarbou
 On first activation, this fork can also detect legacy `.vscode/launch.json` and `.vscode/tasks.json` entries and offer automatic migration to Ekon ids.
 When accepted, original files are preserved as `.bak` backups.
 
+You can also run migration manually at any time with command:
+`Ekon Harbour: Migrate legacy launch/tasks`.
+
 ### Coexistence tip
 If both upstream and this fork are installed, use `ekonHarbour.features.*` to disable overlapping providers in one extension so results stay predictable.
 

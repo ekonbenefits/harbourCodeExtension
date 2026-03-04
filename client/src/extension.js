@@ -149,11 +149,12 @@ function migrateWorkspaceJsonFile(filePath, rewriteFn) {
 	}
 }
 
-async function offerLegacyConfigMigration(context) {
-	if (context.globalState.get(LEGACY_CONFIG_PROMPT_KEY) || !vscode.workspace.workspaceFolders) {
-		return;
-	}
+function migrateLegacyConfigFilesInWorkspace() {
 	let foundLegacy = false;
+	let migratedCount = 0;
+	if (!vscode.workspace.workspaceFolders) {
+		return { foundLegacy, migratedCount };
+	}
 	for (const folder of vscode.workspace.workspaceFolders) {
 		const root = folder.uri.fsPath;
 		const launchPath = path.join(root, ".vscode", "launch.json");
@@ -172,12 +173,29 @@ async function offerLegacyConfigMigration(context) {
 				}
 			} catch (_err) {}
 		}
-		if (foundLegacy) {
-			break;
+		if (migrateWorkspaceJsonFile(launchPath, rewriteLegacyLaunchConfig)) {
+			migratedCount++;
+		}
+		if (migrateWorkspaceJsonFile(tasksPath, rewriteLegacyTaskConfig)) {
+			migratedCount++;
 		}
 	}
+	return { foundLegacy, migratedCount };
+}
+
+async function offerLegacyConfigMigration(context) {
+	if (context.globalState.get(LEGACY_CONFIG_PROMPT_KEY) || !vscode.workspace.workspaceFolders) {
+		return;
+	}
+	const status = migrateLegacyConfigFilesInWorkspace();
+	const foundLegacy = status.foundLegacy || status.migratedCount > 0;
 	if (!foundLegacy) {
 		await context.globalState.update(LEGACY_CONFIG_PROMPT_KEY, true);
+		return;
+	}
+	if (status.migratedCount > 0) {
+		await context.globalState.update(LEGACY_CONFIG_PROMPT_KEY, true);
+		vscode.window.showInformationMessage(`Ekon Harbour migration complete. Updated ${status.migratedCount} file(s).`);
 		return;
 	}
 	const choice = await vscode.window.showInformationMessage(
@@ -193,20 +211,18 @@ async function offerLegacyConfigMigration(context) {
 	if (choice !== "Update now") {
 		return;
 	}
-	let migratedCount = 0;
-	for (const folder of vscode.workspace.workspaceFolders) {
-		const root = folder.uri.fsPath;
-		const launchPath = path.join(root, ".vscode", "launch.json");
-		const tasksPath = path.join(root, ".vscode", "tasks.json");
-		if (migrateWorkspaceJsonFile(launchPath, rewriteLegacyLaunchConfig)) {
-			migratedCount++;
-		}
-		if (migrateWorkspaceJsonFile(tasksPath, rewriteLegacyTaskConfig)) {
-			migratedCount++;
-		}
-	}
+	const result = migrateLegacyConfigFilesInWorkspace();
 	await context.globalState.update(LEGACY_CONFIG_PROMPT_KEY, true);
-	vscode.window.showInformationMessage(`Ekon Harbour migration complete. Updated ${migratedCount} file(s).`);
+	vscode.window.showInformationMessage(`Ekon Harbour migration complete. Updated ${result.migratedCount} file(s).`);
+}
+
+async function runLegacyConfigMigrationCommand() {
+	const result = migrateLegacyConfigFilesInWorkspace();
+	if (!result.foundLegacy) {
+		vscode.window.showInformationMessage("No legacy Harbour launch/tasks configuration found.");
+		return;
+	}
+	vscode.window.showInformationMessage(`Ekon Harbour migration complete. Updated ${result.migratedCount} file(s).`);
 }
 
 async function migrateLegacySettings(context) {
@@ -273,6 +289,7 @@ function activate(context) {
 	vscode.commands.registerCommand('ekon.harbour.getDbgCode', () => { getDbgCode(context); })
 	vscode.commands.registerCommand("ekon.harbour.debugList", DebugList)
 	vscode.commands.registerCommand("ekon.harbour.setupCodeFormat", () => { formatEditor.showEditor(context); })
+	vscode.commands.registerCommand("ekon.harbour.migrateLegacyConfig", () => { runLegacyConfigMigrationCommand(); })
 	if (cl) {
 		if (decoratorFeatureEnabled) {
 			decorator.activate(context,cl);
