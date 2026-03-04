@@ -38,7 +38,8 @@
         "vscode:prepublish": "node copy.js",
         "prelanch": "webpack --mode development",
         "webpack2": "webpack --mode production",
-        "deploy": "vsce publish"
+        "deploy": "vsce publish",
+        "set-build-version": "node set-build-version.js"
     },
     "contributes": {
         "problemMatchers": [

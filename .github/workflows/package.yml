@@ -25,6 +25,10 @@ jobs:
       - name: Install server dependencies
         run: npm install
         working-directory: ./server
+      - name: Add CI build number to extension version (PR only)
+        if: github.event_name == 'pull_request'
+        run: npm run set-build-version -- ${{ github.run_number }}
+        working-directory: ./client
       - name: Make VSIX
         run: npx @vscode/vsce package
         working-directory: ./client
