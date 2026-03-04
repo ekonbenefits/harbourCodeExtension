@@ -109,6 +109,21 @@
                     "minimum": 0,
                     "description": "%harbour.workspaceDepth%"
                 },
+                "ekonHarbour.features.languageServer": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable language server features (completion, symbols, go to definition, formatting, etc.)."
+                },
+                "ekonHarbour.features.validation": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable diagnostics/lint validation from this extension."
+                },
+                "ekonHarbour.features.decorator": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable block pair decoration from this extension."
+                },
                 "ekonHarbour.formatter.indent.funcBody": {
                     "type": "boolean",
                     "description": "%harbour.formatter.indent.funcBody%",

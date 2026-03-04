@@ -39,9 +39,15 @@ This extension contributes the following settings:
 * `ekonHarbour.extraOptions`: other options to pass to harbour compiler.
 * `ekonHarbour.warningLevel`: sets the warning level for validation.
 * `ekonHarbour.decorator`: if true enables the feature of decoration of correspondents if/endif, for/next, while/endwhile, etc etc
+* `ekonHarbour.features.languageServer`: if false disables LSP features from this extension (completion, symbols, formatting, navigation).
+* `ekonHarbour.features.validation`: if false disables lint/diagnostics from this extension.
+* `ekonHarbour.features.decorator`: if false disables block pair decoration from this extension.
 
 ### Migration from old settings
 On first activation, this fork copies legacy `harbour.*` values into `ekonHarbour.*` (without overwriting existing `ekonHarbour.*` values).
+
+### Coexistence tip
+If both upstream and this fork are installed, use `ekonHarbour.features.*` to disable overlapping providers in one extension so results stay predictable.
 
 ## How to use the debugger<a name="DEBUG"></a>
 You can use the command "Harbour: Get debugger code" to get the source of the debbugger, save it to a file naming it as you like, for example dbg_lib-prg. You can include this file in your project or **BETTER** create a library with this file to link in your project.

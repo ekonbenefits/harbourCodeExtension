@@ -29,6 +29,8 @@ const SETTINGS_TO_MIGRATE = [
 	"formatter.replace.amp"
 ];
 
+let validationEnabled = false;
+
 async function migrateLegacySettings(context) {
 	if (context.globalState.get(SETTINGS_MIGRATION_KEY)) {
 		return;
@@ -55,6 +57,10 @@ async function migrateLegacySettings(context) {
 
 function activate(context) {
 	migrateLegacySettings(context).catch(() => {});
+	const featureSettings = vscode.workspace.getConfiguration("ekonHarbour").get("features") || {};
+	validationEnabled = featureSettings.validation !== false;
+	const languageServerEnabled = featureSettings.languageServer !== false;
+	const decoratorFeatureEnabled = featureSettings.decorator !== false;
 	vscode.languages.setLanguageConfiguration('harbour', {
 		indentationRules: {
 			increaseIndentPattern: /^\s*((?:(?:static|init|exit)\s+)?(?:proc(?:e(?:d(?:u(?:r(?:e)?)?)?)?)?|func(?:t(?:i(?:o(?:n)?)?)?)?)|class(?!\s*(?:var|data|method))|method|if|else(?:if)?|for|if|try|case|otherwise|(?:do\s+)?while|switch|begin)\b/i,
@@ -62,7 +68,9 @@ function activate(context) {
 			indentNextLinePattern: /;((?:\/\/|&&).*)?$/
 		}
 	});
-	validation.activate(context);
+		if (validationEnabled) {
+			validation.activate(context);
+		}
 
 	var serverModuleDbg = context.asAbsolutePath(path.join('..','server'));
 	var serverModule = context.asAbsolutePath('server');
@@ -77,14 +85,21 @@ function activate(context) {
 			configurationSection: ['ekonHarbour','harbour','search','editor']
 		}
 	}
-	var cl = new client.LanguageClient('HarbourServer', 'Harbour Server', serverOptions, clientOptions);
-	cl.registerProposedFeatures()
-	context.subscriptions.push(cl.start());
+	let cl;
+	if (languageServerEnabled) {
+		cl = new client.LanguageClient('HarbourServer', 'Harbour Server', serverOptions, clientOptions);
+		cl.registerProposedFeatures();
+		context.subscriptions.push(cl.start());
+	}
 	vscode.commands.registerCommand('ekon.harbour.getDbgCode', () => { getDbgCode(context); })
 	vscode.commands.registerCommand("ekon.harbour.debugList", DebugList)
 	vscode.commands.registerCommand("ekon.harbour.setupCodeFormat", () => { formatEditor.showEditor(context); })
-	decorator.activate(context,cl);
-	docCreator.activate(context,cl);
+	if (cl) {
+		if (decoratorFeatureEnabled) {
+			decorator.activate(context,cl);
+		}
+		docCreator.activate(context,cl);
+	}
 	taskProvider.activate();	
 	// https://code.visualstudio.com/updates/v1_30#:~:text=Finalized%20Debug%20Adapter%20Tracker%20API
 	/*vscode.debug.registerDebugAdapterTrackerFactory('ekon-harbour-dbg', {
@@ -155,7 +170,9 @@ function getDbgCode(context) {
 }
 
 function deactivate() {
-	 validation.deactivate();
+	if (validationEnabled) {
+		validation.deactivate();
+	}
 }
 
 exports.activate = activate;
